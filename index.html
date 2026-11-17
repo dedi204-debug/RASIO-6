@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Ajar & Kuis: Rasio Kelas 6 SD</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap');
+
+        :root {
+            --merah: #e53935;
+            --merah-gelap: #c62828;
+            --putih: #ffffff;
+            --kuning: #ffca28;
+            --hijau: #43a047;
+            --biru: #1e88e5;
+            --abu: #f5f5f5;
+            --teks: #333333;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        body {
+            background-color: var(--abu);
+            /* Background Merah Putih Menarik */
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(229, 57, 53, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(229, 57, 53, 0.15) 0%, transparent 20%),
+                repeating-linear-gradient(45deg, rgba(255,255,255,0.5) 0px, rgba(255,255,255,0.5) 20px, transparent 20px, transparent 40px);
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--teks);
+        }
+
+        .app-container {
+            background: var(--putih);
+            width: 100%;
+            max-width: 650px;
+            border-radius: 25px;
+            box-shadow: 0 15px 40px rgba(229, 57, 53, 0.25);
+            overflow: hidden;
+            border: 6px solid var(--merah);
+            position: relative;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--merah), #ef5350);
+            color: var(--putih);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 6px solid var(--kuning);
+            position: relative;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 26px;
+            font-weight: 900;
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.2);
+            letter-spacing: 1px;
+        }
+
+        .score-container {
+            display: none;
+            background: var(--putih);
+            color: var(--merah);
+            padding: 8px 25px;
+            border-radius: 20px;
+            font-size: 20px;
+            font-weight: 900;
+            margin-top: 15px;
+            display: inline-block;
+            box-shadow: 0 5px 0px rgba(0,0,0,0.1);
+            border: 3px solid var(--kuning);
+        }
+
+        .screen {
+            display: none;
+            padding: 30px 25px;
+            animation: fadeIn 0.4s ease-in-out;
+            min-height: 400px;
+        }
+
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Navigasi Buttons */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: auto;
+            padding-top: 25px;
+        }
+
+        .btn {
+            padding: 14px 25px;
+            font-size: 18px;
+            font-weight: 800;
+            border-radius: 15px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex: 1;
+        }
+        
+        .btn:active {
+            transform: translateY(4px);
+        }
+
+        .btn-primary { background: var(--merah); color: var(--putih); box-shadow: 0 6px 0 var(--merah-gelap); }
+        .btn-primary:active { box-shadow: 0 2px 0 var(--merah-gelap); }
+        
+        .btn-secondary { background: var(--kuning); color: #b28900; box-shadow: 0 6px 0 #d4a000; }
+        .btn-secondary:active { box-shadow: 0 2px 0 #d4a000; }
+
+        .btn-green { background: var(--hijau); color: var(--putih); box-shadow: 0 6px 0 #2e7d32; }
+        .btn-green:active { box-shadow: 0 2px 0 #2e7d32; }
+
+        /* Material Content */
+        .material-box {
+            background: #fff9e6;
+            padding: 25px;
+            border-radius: 20px;
+            border: 4px dashed var(--kuning);
+            font-size: 18px;
+            line-height: 1.7;
+            flex-grow: 1;
+        }
+        
+        .material-box h2 {
+            color: var(--merah);
+            text-align: center;
+            margin-top: 0;
+            border-bottom: 3px solid var(--kuning);
+            padding-bottom: 15px;
+            font-size: 24px;
+        }
+
+        .highlight-red { color: var(--merah); font-weight: bold; }
+        .highlight-box {
+            background: #ffebee;
+            padding: 10px 15px;
+            border-radius: 10px;
+            border-left: 5px solid var(--merah);
+            margin: 15px 0;
+            font-weight: 700;
+        }
+
+        /* Quiz Box */
+        .question-box {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 20px;
+            text-align: center;
+            border: 4px solid var(--biru);
+            color: #1565c0;
+            font-weight: 800;
+            margin-bottom: 25px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .option-btn {
+            background: var(--putih);
+            border: 3px solid #e0e0e0;
+            padding: 15px 20px;
+            font-size: 18px;
+            font-weight: 700;
+            border-radius: 15px;
+            cursor: pointer;
+            color: var(--teks);
+            text-align: left;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .option-btn:hover {
+            border-color: var(--merah);
+            background: #ffebee;
+            transform: scale(1.02);
+        }
+
+        .option-btn:active {
+            transform: scale(0.98);
+        }
+
+        .option-label {
+            background: var(--merah);
+            color: var(--putih);
+            width: 35px;
+            height: 35px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            margin-right: 15px;
+            font-weight: 900;
+            flex-shrink: 0;
+            box-shadow: 0 3px 0 var(--merah-gelap);
+        }
+
+        /* Modal / Pop-up Feedback */
+        .modal-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: var(--putih);
+            padding: 30px;
+            border-radius: 25px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            width: 90%;
+            max-width: 450px;
+            transform: scale(0.8);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-content.show { transform: scale(1); }
+
+        .modal-icon { font-size: 70px; margin-bottom: 10px; }
+        .modal-title { font-size: 28px; margin-bottom: 15px; font-weight: 900; }
+        
+        .modal-explanation {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 15px;
+            text-align: left;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            color: #444;
+            border-left: 5px solid var(--biru);
+        }
+
+        .theme-correct { border: 6px solid var(--hijau); }
+        .theme-correct .modal-title { color: var(--hijau); }
+        
+        .theme-wrong { border: 6px solid var(--merah); }
+        .theme-wrong .modal-title { color: var(--merah); }
+
+        /* End Screen */
+        .end-content { text-align: center; margin: auto; }
+        .end-content h2 { color: var(--merah); font-size: 34px; margin: 0 0 10px 0; }
+        
+        .score-circle {
+            background: var(--kuning);
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 55px;
+            font-weight: 900;
+            color: var(--merah);
+            border: 8px solid var(--putih);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Header & Skor -->
+        <div class="header">
+            <h1>🇮🇩 Cerdas Tangkas: RASIO 🇮🇩</h1>
+            <div class="score-container" id="score-board">
+                ⭐ SKOR: <span id="score-display">0</span>
+            </div>
+        </div>
+
+        <!-- 1. Screen: Home -->
+        <div class="screen active" id="screen-home">
+            <div style="text-align: center; margin: auto;">
+                <div style="font-size: 90px; margin-bottom: 10px;">📚💡</div>
+                <h2 style="color: var(--merah); font-size: 28px; font-weight: 900;">Selamat Datang, Siswa Hebat!</h2>
+                <p style="font-size: 18px; color: #555; margin-bottom: 30px; line-height: 1.6;">Mari belajar materi <b>Rasio (Perbandingan)</b> untuk Kelas 6 SD. Kita akan baca materinya dulu, setelah itu kamu bisa menguji kemampuanmu di Kuis Interaktif!</p>
+                <button class="btn btn-primary" style="width: 100%; padding: 18px; font-size: 22px;" onclick="goToScreen('screen-material')">Mulai Belajar 🚀</button>
+            </div>
+        </div>
+
+        <!-- 2. Screen: Materi (Dinamis) -->
+        <div class="screen" id="screen-material">
+            <div class="material-box" id="material-content">
+                <!-- Konten materi disuntikkan via JS -->
+            </div>
+            
+            <div class="nav-buttons">
+                <button class="btn btn-secondary" id="btn-prev" onclick="prevMaterial()">⬅ Kembali</button>
+                <button class="btn btn-primary" id="btn-next" onclick="nextMaterial()">Lanjut ➡</button>
+            </div>
+        </div>
+
+        <!-- 3. Screen: Kuis -->
+        <div class="screen" id="screen-quiz">
+            <div class="question-box" id="question-text">Memuat Soal...</div>
+            <div class="options-grid" id="options-container">
+                <!-- Pilihan Jawaban via JS -->
+            </div>
+        </div>
+
+        <!-- 4. Screen: Hasil Akhir -->
+        <div class="screen" id="screen-end">
+            <div class="end-content">
+                <h2>Permainan Selesai! 🎉</h2>
+                <div class="score-circle" id="final-score">100</div>
+                <p id="final-message" style="font-size: 20px; font-weight: 800; color: #555; margin-bottom: 30px;"></p>
+                <div style="display: flex; gap: 15px;">
+                    <button class="btn btn-secondary" onclick="resetApp()">📖 Belajar Lagi</button>
+                    <button class="btn btn-green" onclick="startQuiz()">🔄 Ulangi Kuis</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Feedback Kuis -->
+        <div class="modal-overlay" id="feedback-modal">
+            <div class="modal-content" id="modal-box">
+                <div class="modal-icon" id="modal-icon">🌟</div>
+                <div class="modal-title" id="modal-title">Judul</div>
+                <div class="modal-explanation" id="modal-explanation">Penjelasan</div>
+                <button class="btn btn-green" style="width: 100%;" onclick="nextQuestion()">Lanjut ke Soal Berikutnya ➔</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA MATERI ---
+        const materials = [
+            {
+                title: "1. Apa itu Rasio?",
+                content: `
+                    <p><b>Rasio</b> atau perbandingan adalah cara kita membandingkan dua besaran atau lebih.</p>
+                    <p>Rasio bisa dituliskan dengan 3 cara, yaitu:</p>
+                    <ul>
+                        <li>Menggunakan kata "dari" atau "berbanding" (Misal: 2 berbanding 3)</li>
+                        <li>Menggunakan titik dua <b>(:)</b> (Misal: 2 : 3)</li>
+                        <li>Dalam bentuk pecahan (Misal: &frac23;)</li>
+                    </ul>
+                    <div class="highlight-box">
+                        Contoh:<br>
+                        Di dalam kelas ada 10 siswa laki-laki dan 15 siswa perempuan. <br>
+                        Maka rasio siswa laki-laki terhadap siswa perempuan adalah <b>10 : 15</b>.
+                    </div>
+                `
+            },
+            {
+                title: "2. Menyederhanakan Rasio",
+                content: `
+                    <p>Sama seperti pecahan, rasio harus ditulis dalam <b>bentuk paling sederhana</b>.</p>
+                    <p>Caranya adalah dengan membagi kedua angka dengan bilangan yang sama (FPB) sampai tidak bisa dibagi lagi.</p>
+                    <div class="highlight-box">
+                        Contoh: Sederhanakan rasio 12 : 18<br><br>
+                        Langkah 1: Keduanya bisa dibagi 6 (karena FPB 12 dan 18 adalah 6).<br>
+                        Langkah 2: 12 &divide; 6 = 2<br>
+                        Langkah 3: 18 &divide; 6 = 3<br><br>
+                        Jadi, bentuk sederhananya adalah <b>2 : 3</b>.
+                    </div>
+                `
+            },
+            {
+                title: "3. Menyelesaikan Masalah Rasio",
+                content: `
+                    <p>Jika diketahui <b>rasio (A : B)</b> dan <b>jumlah salah satunya</b>, kita bisa mencari yang lain.</p>
+                    <div class="highlight-box">
+                        Contoh Soal:<br>
+                        Perbandingan umur Ani dan Budi adalah <b>3 : 4</b>. Jika umur Ani adalah <b>12 tahun</b>, berapakah umur Budi?
+                    </div>
+                    <p><b>Penyelesaian:</b></p>
+                    <ul>
+                        <li>Angka rasio Ani = 3</li>
+                        <li>Umur Ani = 12 tahun</li>
+                        <li>Berarti 1 nilai rasio = 12 &divide; 3 = <b>4 tahun</b>.</li>
+                        <li>Umur Budi = (Angka rasio Budi) &times; 4<br>
+                        Umur Budi = 4 &times; 4 = <b class="highlight-red">16 tahun</b>.</li>
+                    </ul>
+                `
+            },
+            {
+                title: "4. Skala (Penerapan Rasio)",
+                content: `
+                    <p><b>Skala peta</b> juga merupakan salah satu bentuk rasio!</p>
+                    <p>Jika pada peta tertulis skala <b>1 : 100.000</b>, artinya:</p>
+                    <p>Setiap <b>1 cm</b> pada peta mewakili jarak sebenarnya sejauh <b>100.000 cm</b> (atau 1 km) di dunia nyata.</p>
+                    <div class="highlight-box">
+                        Contoh: Jarak dua kota di peta adalah 3 cm dengan skala 1 : 1.000.000.<br>
+                        Jarak sebenarnya = 3 &times; 1.000.000 = 3.000.000 cm = <b>30 km</b>.
+                    </div>
+                    <p style="text-align:center; font-weight:800; color:var(--merah); margin-top:20px;">Hebat! Kamu sudah selesai membaca materi. Siap untuk Kuis?</p>
+                `
+            }
+        ];
+
+        // --- DATA SOAL KUIS ---
+        const quizData = [
+            {
+                question: "Bentuk perbandingan paling sederhana dari 15 : 25 adalah...",
+                options: ["2 : 3", "3 : 4", "3 : 5", "5 : 7"],
+                correctIndex: 2, // 3 : 5
+                explanation: "Sederhanakan dengan membagi kedua angka dengan angka 5 (FPB dari 15 dan 25).<br>• 15 &divide; 5 = 3<br>• 25 &divide; 5 = 5<br>Jadi, hasilnya adalah <b>3 : 5</b>."
+            },
+            {
+                question: "Rasio jumlah buku cerita milik Tono dan Andi adalah 4 : 5. Jika buku Andi ada 20 buah, berapa jumlah buku Tono?",
+                options: ["12 buah", "16 buah", "24 buah", "25 buah"],
+                correctIndex: 1, // 16 buah
+                explanation: "Rasio Tono : Andi = 4 : 5. Jumlah buku Andi = 20.<br>• Cari nilai 1 rasio: 20 &divide; 5 = 4 buku.<br>• Buku Tono: 4 (rasio Tono) &times; 4 = <b>16 buah</b>."
+            },
+            {
+                question: "Ibu membuat es sirop. Perbandingan antara sirop dan air putih adalah 1 : 4. Jika ibu menuangkan 50 ml sirop, berapa banyak air putih yang dibutuhkan?",
+                options: ["150 ml", "200 ml", "250 ml", "400 ml"],
+                correctIndex: 1, // 200 ml
+                explanation: "Sirop : Air = 1 : 4.<br>Jika sirop 50 ml (nilai 1 rasio = 50), maka air yang dibutuhkan adalah:<br>4 &times; 50 ml = <b>200 ml</b>."
+            },
+            {
+                question: "Jarak kota A dan B di peta adalah 5 cm. Jika skala peta tersebut adalah 1 : 200.000, berapa jarak sebenarnya?",
+                options: ["10 km", "100 km", "1.000 km", "200 km"],
+                correctIndex: 0, // 10 km
+                explanation: "Jarak sebenarnya = Jarak peta &times; Skala<br>Jarak sebenarnya = 5 cm &times; 200.000 = 1.000.000 cm.<br>Ubah ke kilometer: 1.000.000 cm &divide; 100.000 = <b>10 km</b>."
+            },
+            {
+                question: "Perbandingan kelereng Merah dan Biru adalah 2 : 5. Jika selisih kelereng mereka 15 butir, berapa jumlah kelereng Merah?",
+                options: ["10 butir", "15 butir", "20 butir", "25 butir"],
+                correctIndex: 0, // 10 butir
+                explanation: "Selisih angka rasio = 5 - 2 = 3.<br>Selisih kelereng = 15.<br>Nilai 1 rasio = 15 &divide; 3 = 5 butir.<br>Jumlah kelereng Merah = 2 &times; 5 = <b>10 butir</b>."
+            }
+        ];
+
+        // --- STATE VARIABLES ---
+        let currentMaterialIndex = 0;
+        let currentQuestionIndex = 0;
+        let score = 0;
+        const scorePerQ = 100 / quizData.length;
+
+        // UI Elements
+        const scoreBoard = document.getElementById('score-board');
+        const scoreDisplay = document.getElementById('score-display');
+        const screens = document.querySelectorAll('.screen');
+        
+        // Modal Elements
+        const modal = document.getElementById('feedback-modal');
+        const modalBox = document.getElementById('modal-box');
+        const modalIcon = document.getElementById('modal-icon');
+        const modalTitle = document.getElementById('modal-title');
+        const modalExplanation = document.getElementById('modal-explanation');
+
+        // --- FUNCTIONS ---
+        function goToScreen(screenId) {
+            screens.forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            
+            if (screenId === 'screen-material') {
+                currentMaterialIndex = 0;
+                renderMaterial();
+            }
+        }
+
+        function renderMaterial() {
+            const data = materials[currentMaterialIndex];
+            document.getElementById('material-content').innerHTML = `
+                <h2>${data.title}</h2>
+                ${data.content}
+            `;
+
+            // Update Navigation Buttons
+            const btnPrev = document.getElementById('btn-prev');
+            const btnNext = document.getElementById('btn-next');
+
+            if (currentMaterialIndex === 0) {
+                btnPrev.innerHTML = "⬅ Kembali ke Awal";
+                btnPrev.onclick = () => goToScreen('screen-home');
+            } else {
+                btnPrev.innerHTML = "⬅ Sebelumnya";
+                btnPrev.onclick = prevMaterial;
+            }
+
+            if (currentMaterialIndex === materials.length - 1) {
+                btnNext.innerHTML = "Mulai Kuis 🎯";
+                btnNext.className = "btn btn-primary";
+                btnNext.onclick = startQuiz;
+            } else {
+                btnNext.innerHTML = "Lanjut Materi ➡";
+                btnNext.className = "btn btn-primary";
+                btnNext.onclick = nextMaterial;
+            }
+        }
+
+        function nextMaterial() {
+            if (currentMaterialIndex < materials.length - 1) {
+                currentMaterialIndex++;
+                renderMaterial();
+            }
+        }
+
+        function prevMaterial() {
+            if (currentMaterialIndex > 0) {
+                currentMaterialIndex--;
+                renderMaterial();
+            }
+        }
+
+        function startQuiz() {
+            screens.forEach(s => s.classList.remove('active'));
+            document.getElementById('screen-quiz').classList.add('active');
+            
+            score = 0;
+            currentQuestionIndex = 0;
+            scoreDisplay.innerText = score;
+            scoreBoard.style.display = 'inline-block';
+            
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const q = quizData[currentQuestionIndex];
+            document.getElementById('question-text').innerText = `Soal ${currentQuestionIndex + 1}:
+
+${q.question}`;
+            
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = "";
+            const labels = ["A", "B", "C", "D"];
+            
+            q.options.forEach((opt, index) => {
+                const btn = document.createElement("button");
+                btn.className = "option-btn";
+                btn.innerHTML = `<span class="option-label">${labels[index]}</span> ${opt}`;
+                btn.onclick = () => checkAnswer(index);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedIndex) {
+            const q = quizData[currentQuestionIndex];
+            const isCorrect = (selectedIndex === q.correctIndex);
+
+            if (isCorrect) {
+                score += scorePerQ;
+                scoreDisplay.innerText = score;
+                
+                modalBox.className = "modal-content show theme-correct";
+                modalIcon.innerText = "🤩";
+                modalTitle.innerText = "Jawabanmu Benar!";
+                modalExplanation.innerHTML = `<b>Pintar sekali!</b><br><br>${q.explanation}`;
+            } else {
+                modalBox.className = "modal-content show theme-wrong";
+                modalIcon.innerText = "💪";
+                modalTitle.innerText = "Ups, Masih Kurang Tepat!";
+                modalExplanation.innerHTML = `Jawaban yang benar adalah: <b>${q.options[q.correctIndex]}</b><br><br><b>Pembahasan:</b><br>${q.explanation}`;
+            }
+
+            modal.style.display = "flex";
+        }
+
+        function nextQuestion() {
+            modal.style.display = "none";
+            currentQuestionIndex++;
+
+            if (currentQuestionIndex < quizData.length) {
+                loadQuestion();
+            } else {
+                endQuiz();
+            }
+        }
+
+        function endQuiz() {
+            screens.forEach(s => s.classList.remove('active'));
+            document.getElementById('screen-end').classList.add('active');
+            scoreBoard.style.display = 'none';
+            
+            document.getElementById('final-score').innerText = score;
+            
+            const msg = document.getElementById('final-message');
+            if (score === 100) {
+                msg.innerHTML = "SEMPURNA! 🏆<br>Kamu benar-benar menguasai materi Rasio!";
+            } else if (score >= 60) {
+                msg.innerHTML = "BAGUS! 👍<br>Kamu sudah memahami dasar-dasarnya. Tingkatkan lagi ya!";
+            } else {
+                msg.innerHTML = "JANGAN MENYERAH! 💪<br>Yuk, pelajari lagi materinya perlahan-lahan.";
+            }
+        }
+
+        function resetApp() {
+            scoreBoard.style.display = 'none';
+            goToScreen('screen-home');
+        }
+    </script>
+</body>
+</html>
